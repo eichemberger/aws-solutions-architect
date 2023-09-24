@@ -8,6 +8,7 @@ import {Runtime} from "aws-cdk-lib/aws-lambda";
 import {join} from "path";
 import {LambdaSubscription} from "aws-cdk-lib/aws-sns-subscriptions";
 import {Queue} from "aws-cdk-lib/aws-sqs";
+import {randomUUID} from 'crypto';
 
 /*
     * This stack creates an S3 bucket and configures it to send a notification
@@ -21,7 +22,7 @@ export class S3NotificationsStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const suffix = 's3stack-unique-identifier-134kdanf';
+    const suffix = randomUUID();
 
     const s3EventLambda = new NodejsFunction(this, `s3EventLambda-${suffix}`, {
       runtime: Runtime.NODEJS_18_X,
