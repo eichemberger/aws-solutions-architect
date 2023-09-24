@@ -6,7 +6,7 @@ import {existsSync} from 'node:fs';
 import {BucketDeployment, Source} from 'aws-cdk-lib/aws-s3-deployment';
 import {Distribution, OriginAccessIdentity} from 'aws-cdk-lib/aws-cloudfront';
 import {S3Origin} from 'aws-cdk-lib/aws-cloudfront-origins';
-import {randomUUID} from "crypto";
+import {randomUUID} from 'crypto';
 
 export class UIDeploymentStack extends Stack {
 
@@ -40,12 +40,12 @@ export class UIDeploymentStack extends Stack {
             defaultBehavior: {
                 origin: new S3Origin(uiBucket, {
                     originAccessIdentity: originIdentity,
-                })
+                }),
             }
         });
 
         new CfnOutput(this, 'DistributionDomainName', {
-            value: distribution.distributionDomainName
+            value: distribution.distributionDomainName,
         });
     }
 }
