@@ -11,6 +11,11 @@ export const config = {
     },
     ui: {
         prefixDomain: jsonConfig.ui.subdomain,
+    },
+    monitoring: {
+        prometheus: {
+            key: jsonConfig.monitoring.prometheus?.key,
+        }
     }
 }
 

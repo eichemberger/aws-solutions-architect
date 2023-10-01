@@ -13,6 +13,9 @@ import {
 } from "aws-cdk-lib/aws-ec2";
 import * as path from "path";
 import * as fs from "fs";
+import {generateID} from "../../utils/IDGenerator";
+import {getExportName} from "../../utils/Utils";
+import {config} from "../../utils/Config";
 
 /*
     * This is a stack for Prometheus
@@ -29,8 +32,10 @@ export class PrometheusStack extends Stack {
         const prometheusScriptPath = path.join(__dirname, '..', 'scripts', 'prometheus', 'prometheus-install.sh');
         const prometheusScriptData = fs.readFileSync(prometheusScriptPath, 'utf8');
 
-        const ec2Instance = new Instance(this, 'prometheus-instance', {
+        const ec2Instance = new Instance(this, generateID('prometheus-instance'), {
             vpc: props.vpc,
+            instanceName: generateID('prometheus-instance'),
+            keyName: config.monitoring.prometheus?.key,
             instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
             vpcSubnets: {
                 subnetType: SubnetType.PUBLIC,
@@ -44,10 +49,10 @@ export class PrometheusStack extends Stack {
 
         ec2Instance.addUserData(prometheusScriptData);
 
-        new CfnOutput(this, 'prometheusIp', {
+        new CfnOutput(this, generateID('prometheusIp'), {
             value: ec2Instance.instancePublicIp,
             description: 'Prometheus IP',
-            exportName: 'prometheus:ip'
+            exportName: getExportName('prometheusIp'),
         });
     }
 }

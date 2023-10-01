@@ -9,5 +9,10 @@
   },
   "ui": {
     "subdomain": "app"
+  },
+  "monitoring": {
+    "prometheus": {
+      "key": "eichemberger.ppm"
+    }
   }
 }
