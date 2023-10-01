@@ -1,3 +1,4 @@
+#!/bin/bash
 sudo useradd --no-create-home --shell /bin/false prometheus
 
 sudo mkdir /etc/prometheus
@@ -32,7 +33,7 @@ cat << 'EOF' > /etc/systemd/system/prometheus.service
   [Unit]
   Description=Prometheus
   Wants=network-online.target
-  After=networ-online.target
+  After=network-online.target
 
   [Service]
   User=prometheus
