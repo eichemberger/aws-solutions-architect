@@ -2,5 +2,12 @@
   "app": {
     "name": "my-app",
     "environment": "development"
+  },
+  "route53": {
+    "domain": "mydomain.com",
+    "hostedZoneId": "Z1ABCDEF123456"
+  },
+  "ui": {
+    "subdomain": "app"
   }
 }

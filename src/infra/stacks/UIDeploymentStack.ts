@@ -15,21 +15,21 @@ import {S3Origin} from 'aws-cdk-lib/aws-cloudfront-origins';
 import {AaaaRecord, ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
-import 'dotenv/config';
+import {generateID} from "../../utils/IDGenerator";
+import {getExportName} from "../../utils/Utils";
+import {config} from "../../utils/Config";
 
 export class UIDeploymentStack extends Stack {
 
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const hostedZoneId = process.env.HOSTED_ZONE_ID!;
-        const zoneName = process.env.ZONE_NAME!;
-        const prefixDomain = process.env.PREFIX_DOMAIN!;
+        const hostedZoneId = config.route53.hostedZoneId;
+        const zoneName = config.route53.domain;
+        const prefixDomain = config.ui.prefixDomain;
 
-        const suffix = 'ui-deployment-asjkd3';
-
-        const uiBucket = new Bucket(this, `UIBucket-${suffix}`, {
-            bucketName: `ui-deployment-bucket-${suffix}`,
+        const uiBucket = new Bucket(this, generateID('UIBucket'), {
+            bucketName: generateID('ui-bucket'),
         });
 
         const uiDirectory = path.join(__dirname, '..', '..', 's3UiBucket', 'dist');
@@ -39,26 +39,26 @@ export class UIDeploymentStack extends Stack {
             return;
         }
 
-        new BucketDeployment(this, 'UIDeploymentBucket', {
+        new BucketDeployment(this, generateID('bucketDeployment'), {
             destinationBucket: uiBucket,
             sources: [Source.asset(uiDirectory)],
         });
 
-        const originIdentity = new OriginAccessIdentity(this, 'OriginAccessIdentity');
+        const originIdentity = new OriginAccessIdentity(this, generateID('originIdentity'));
 
         uiBucket.grantRead(originIdentity);
 
-        const hostedZone = HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+        const hostedZone = HostedZone.fromHostedZoneAttributes(this, generateID('hostedZone'), {
             hostedZoneId: hostedZoneId,
             zoneName: zoneName,
         });
 
-        const certificate = new Certificate(this, 'Certificate', {
+        const certificate = new Certificate(this, generateID('certificate'), {
             domainName: `${prefixDomain}.${zoneName}`,
             validation: CertificateValidation.fromDns(hostedZone),
         });
 
-        const distribution = new Distribution(this, 'OriginDistribution', {
+        const distribution = new Distribution(this, generateID('originDistribution'), {
             defaultRootObject: 'index.html',
             defaultBehavior: {
                 viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -72,20 +72,22 @@ export class UIDeploymentStack extends Stack {
             httpVersion: HttpVersion.HTTP2_AND_3,
         });
 
-        new ARecord(this, `ARecord-${suffix}`, {
+        new ARecord(this, generateID('ARecord'), {
             target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
             zone: hostedZone,
             recordName: `${prefixDomain}.${zoneName}`,
         });
 
-        new AaaaRecord(this, `AaaaRecord-${suffix}`, {
+        new AaaaRecord(this, generateID('AaaaRecord'), {
             zone: hostedZone,
             target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
             recordName: `${prefixDomain}.${zoneName}`,
         });
 
-        new CfnOutput(this, 'DistributionDomainName', {
+        new CfnOutput(this, generateID('distributionDomainName'), {
             value: distribution.distributionDomainName,
+            description: 'The domain name of the CloudFront distribution',
+            exportName: getExportName('distributionDomainName'),
         });
     }
 }
