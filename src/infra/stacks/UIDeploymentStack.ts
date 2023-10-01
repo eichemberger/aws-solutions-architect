@@ -12,7 +12,6 @@ import {
     ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
 import {S3Origin} from 'aws-cdk-lib/aws-cloudfront-origins';
-import {randomUUID} from 'crypto';
 import {AaaaRecord, ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
