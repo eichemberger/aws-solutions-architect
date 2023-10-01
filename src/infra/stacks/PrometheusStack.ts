@@ -26,7 +26,7 @@ export class PrometheusStack extends Stack {
     constructor(scope: Construct, id: string, props: PrometheusStackProps) {
         super(scope, id, props);
 
-        const prometheusScriptPath = path.join(__dirname, '..', 'scripts', 'prometheus-install.sh');
+        const prometheusScriptPath = path.join(__dirname, '..', 'scripts', 'prometheus', 'prometheus-install.sh');
         const prometheusScriptData = fs.readFileSync(prometheusScriptPath, 'utf8');
 
         const ec2Instance = new Instance(this, 'prometheus-instance', {
