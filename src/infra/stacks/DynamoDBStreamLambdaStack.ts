@@ -5,6 +5,7 @@ import {NodejsFunction} from "aws-cdk-lib/aws-lambda-nodejs";
 import {Runtime, StartingPosition} from "aws-cdk-lib/aws-lambda";
 import {join} from "path";
 import {DynamoEventSource} from "aws-cdk-lib/aws-lambda-event-sources";
+import {generateID} from "../../utils/IDGenerator";
 
 /*
     * This stack creates a DynamoDB table with a stream and a Lambda function
@@ -14,14 +15,14 @@ export class DynamoDBStreamLambdaStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const table = new DynamoDBTable(this, 'DynamoTableWithStream', {
+        const table = new DynamoDBTable(this, generateID('dynamoDBStream'), {
             billingMode: BillingMode.PAY_PER_REQUEST,
             partitionKey: { name: 'id', type: AttributeType.STRING },
             stream: StreamViewType.NEW_AND_OLD_IMAGES,
             tableName: 'Table',
         });
 
-        const lambdaFunction = new NodejsFunction(this, `dynamoDbLambdaStreamFunction`, {
+        const lambdaFunction = new NodejsFunction(this, generateID('dynamoDbLambdaStreamFunction'), {
             runtime: Runtime.NODEJS_18_X,
             handler: 'handler',
             entry: (join(__dirname, '..','..', 'lambda', 'dynamoStream', 'handler.ts')),
